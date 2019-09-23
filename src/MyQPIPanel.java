@@ -28,7 +28,7 @@ public class MyQPIPanel extends Panel {
 		});
 		
 		np_units = new MyNumPicker(3);
-		
+
 		setLayout(new GridLayout(1, 3));
 		add(tf_course);
 		add(cb_grade);

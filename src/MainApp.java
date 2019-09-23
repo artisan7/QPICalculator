@@ -7,13 +7,15 @@ import java.util.Vector;
 @SuppressWarnings("serial")
 public class MainApp extends JFrame implements ActionListener {
 	
-	Vector<MyQPIPanel> subjects = new Vector<MyQPIPanel>();
+	private Vector<MyQPIPanel> subjects = new Vector<MyQPIPanel>();
+	private Dimension ORIGINAL_SIZE = new Dimension(450, 130);
 	
-	JPanel pnl_control;
-	JPanel pnl_qpi;
-	JPanel pnl_result;
-	JTextField tf_result;
+	private JPanel pnl_control;
+	private JPanel pnl_qpi;
+	private JPanel pnl_result;
+	private JTextField tf_result;
 	
+	// MAIN APP CONSTRUCTOR
 	public MainApp() {
 		pnl_control = new JPanel();
 		pnl_qpi = new JPanel();
@@ -34,10 +36,7 @@ public class MainApp extends JFrame implements ActionListener {
 		pnl_control.add(btn_calc);
 		
 		// QPI PANELS SETUP
-		MyQPIPanel qpi1 = new MyQPIPanel();
-		subjects.add(qpi1);
-		
-		pnl_qpi.add(qpi1);
+		addQPIPanel();
 		
 		// RESULT PANEL SETUP
 		JLabel lbl_qpi = new JLabel("QPI");
@@ -52,9 +51,9 @@ public class MainApp extends JFrame implements ActionListener {
 		
 		// MAIN WINDOW SETUP
 		setTitle("QPI Calculator");
-		setSize(450, 120);
+		setSize(ORIGINAL_SIZE);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setResizable(false);
+		//setResizable(false);
 		
 		add(pnl_control, BorderLayout.NORTH);
 		add(pnl_qpi, BorderLayout.CENTER);
@@ -62,31 +61,23 @@ public class MainApp extends JFrame implements ActionListener {
 		
 		setVisible(true);
 	}
-
+	
+	// ACTION LISTENER
 	public void actionPerformed(ActionEvent e) {
 		String str_src = ((JButton) e.getSource()).getText();
 		
-		if (str_src.equals("ADD")) {
-			MyQPIPanel s = new MyQPIPanel();
-			subjects.add(s);
-			pnl_qpi.add(s);
+		if (str_src.equals("ADD")) {	// add button functionality
+			addQPIPanel();
+		}
+		else if (str_src.equals("RESET") && subjects.size()-1 > 0) {	// reset button functionality
+			subjects.clear();
+			pnl_qpi.removeAll();
 			
-			setSize(getSize().width, getSize().height + 30);
+			addQPIPanel();
+
+			setSize(ORIGINAL_SIZE);
 		}
-		else if (str_src.equals("RESET")) {
-			int delSize = subjects.size()-1;
-			if (delSize > 0) {
-				setSize(getSize().width, getSize().height - 30*delSize);
-				
-				subjects.clear();
-				pnl_qpi.removeAll();
-				
-				MyQPIPanel qpi1 = new MyQPIPanel();
-				subjects.add(qpi1);
-				pnl_qpi.add(qpi1);
-			}
-		}
-		else if (str_src.equals("CALCULATE")) {
+		else if (str_src.equals("CALCULATE")) {		// calculate button functionality
 			float sum = 0;
 			int total_units = 0;
 			
@@ -100,6 +91,33 @@ public class MainApp extends JFrame implements ActionListener {
 		}
 	}
 	
+	// ADD QPI PANEL
+	private void addQPIPanel() {
+		MyQPIPanel s = new MyQPIPanel();
+		subjects.add(s);
+		
+		// delete button w/ functionality
+		JButton btn_delete = new JButton("x");
+		btn_delete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JPanel src = (JPanel) ((JButton) e.getSource()).getParent();
+				subjects.remove(src.getComponent(0));
+				pnl_qpi.remove(src);
+				
+				setSize(getSize().width, getSize().height - 41);
+			}
+		});
+		
+		// qpi panel setup
+		JPanel p = new JPanel();
+		p.add(s, BorderLayout.CENTER);
+		p.add(btn_delete, BorderLayout.EAST);
+		
+		pnl_qpi.add(p);
+		setSize(getSize().width, getSize().height + 41);
+	}
+	
+	// MAIN
 	public static void main(String[] args) {
 		new MainApp();
 	}
